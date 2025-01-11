@@ -10,35 +10,90 @@ import java.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import com.example.Chat_system.Entities.UserEntity;
 
+import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 
 
 @Controller
+@SessionAttributes("loggedUser")
 public class MainController {
 
+    private static SessionFactory factory = 
+    new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(UserEntity.class).buildSessionFactory();
+
+
+    @GetMapping("/")
+    public String showHomePage(Model model) {
+        UserEntity user = (UserEntity) model.getAttribute("loggedUser");
+
+        if (user == null){
+            // model.addAttribute("login", new UserEntity())
+
+            return "Login.html";
+        }else{
+            // model.addAttribute("registerUser", new UserEntity());
+            // TODO go to the home page (dashboard) 
+            return "Register.html";
+        }
+    }
+
+    @PostMapping("/registered")
+    public String postRegistered(Model model, @ModelAttribute UserEntity user) {
+        
+        //TODO Complete this method!!!
+        Session session = factory.getCurrentSession();
+        session.persist(user);
+
+        model.addAttribute("user", new UserEntity());
+        return "Login.html";
+    }
+    
+    
 
 
 
+    @ModelAttribute
+    private void justrun(Model model){
+        try{
+            UserEntity loggedUser = (UserEntity) model.getAttribute("loggedUser");
+            if (loggedUser != null)
+                System.err.println("There is someone who already logged in!");
+            else{
+                System.out.println("No logged user!");
+            }
+                showSignUp(model);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        
+    }
 
     @GetMapping("/login")
-    public String showLogin(Model model) {
-        // model.addAttribute()
-
+    public String showLogin( Model model, HttpSession httpSession) {
+        model.addAttribute("user", new UserEntity());
         return "Login.html";
     }
 
 
     @GetMapping("/signUp")
     public String showSignUp(Model model) {
-        // model.addAttribute()
-
+        model.addAttribute("user", new UserEntity());
         return "SignUp.html";
     }
+
+    
     
     
     @GetMapping("/time")
@@ -47,20 +102,6 @@ public class MainController {
         LocalDateTime date = LocalDateTime.now();
         formatter.format(date);
         System.out.println(formatter.format(date));
-
-        Connection connection = PostgreSQLJDBC.getConnection();
-        Statement statement = connection.createStatement();
-        ResultSet result = statement.executeQuery("SELECT * FROM public.\"Users\";");
-
-
-        System.out.println("\n*********************");
-        while (result.next()) {
-            System.out.println("id: " + result.getInt("id"));
-            System.out.println("username: " + result.getString("Username"));
-            System.out.println("password: " + result.getString("Password"));
-            System.out.println("email: " + result.getString("Email"));
-            System.out.println();
-        }
 
         return "index.html";
     }
