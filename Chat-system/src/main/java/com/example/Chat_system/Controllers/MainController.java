@@ -1,9 +1,6 @@
 package com.example.Chat_system.Controllers;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -17,8 +14,6 @@ import com.example.Chat_system.Entities.UserEntity;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -30,8 +25,6 @@ import org.hibernate.cfg.Configuration;
 @SessionAttributes("loggedUser")
 public class MainController {
 
-    private static SessionFactory factory = 
-    new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(UserEntity.class).buildSessionFactory();
 
 
     @GetMapping("/")
@@ -51,10 +44,18 @@ public class MainController {
 
     @PostMapping("/registered")
     public String postRegistered(Model model, @ModelAttribute UserEntity user) {
-        
+
+        System.out.println("user username= " + user.getUsername());
         //TODO Complete this method!!!
+
+        SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(UserEntity.class).buildSessionFactory();
         Session session = factory.getCurrentSession();
+
+        session.beginTransaction();
         session.persist(user);
+
+        session.getTransaction().commit();
+        session.close();
 
         model.addAttribute("user", new UserEntity());
         return "Login.html";

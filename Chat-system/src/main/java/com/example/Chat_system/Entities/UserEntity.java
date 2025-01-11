@@ -1,24 +1,17 @@
 package com.example.Chat_system.Entities;
 
-import org.springframework.data.annotation.Id;
 
-import jakarta.persistence.*;;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "User")
+@Table(name = "\"Users\"")
 public class UserEntity {
     
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  
     private int id;
 
-    @Column(nullable = false)
-    private String username;
-
-    @Column(nullable = false)
-    private String email;
-
-    @Column(nullable = false)
-    private String password;
+    private String username, email, password;
 
 
     public String getUsername() {
