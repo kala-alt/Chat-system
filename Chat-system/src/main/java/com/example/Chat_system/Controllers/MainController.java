@@ -3,6 +3,8 @@ package com.example.Chat_system.Controllers;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+
 import org.hibernate.cfg.Configuration;
 
 
@@ -25,30 +28,74 @@ import org.hibernate.cfg.Configuration;
 @SessionAttributes("loggedUser")
 public class MainController {
 
+    private static SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(UserEntity.class).buildSessionFactory();
 
+    @PostMapping("/logged")
+    public String checkLogin(Model model, @ModelAttribute UserEntity user){
+
+        Session session = factory.getCurrentSession();
+        session.beginTransaction();
+
+        System.err.println("Email: " + user.getEmail());
+
+        UserEntity findUser = session.createQuery("FROM UserEntity WHERE email = :email AND password = :password", UserEntity.class)
+                    .setParameter("email", user.getEmail())
+                    .setParameter("password", user.getPassword())
+                    .uniqueResult();
+
+        session.getTransaction().commit();
+        session.close();
+
+
+        if (findUser == null)
+            model.addAttribute("loginFail", true);
+        else{
+            model.addAttribute("loginFail", false);
+            model.addAttribute("loggedUser", findUser);
+        }
+        return "Login.html";
+    }
 
     @GetMapping("/")
     public String showHomePage(Model model) {
-        UserEntity user = (UserEntity) model.getAttribute("loggedUser");
+       
 
-        if (user == null){
-            // model.addAttribute("login", new UserEntity())
 
-            return "Login.html";
-        }else{
-            // model.addAttribute("registerUser", new UserEntity());
-            // TODO go to the home page (dashboard) 
-            return "Register.html";
-        }
+        // Session session = factory.getCurrentSession();
+        // session.beginTransaction();
+
+        // List<UserEntity> arr = session.createQuery("",  UserEntity.class)
+        // .setParameter("", "")
+        // .getResultList();
+
+        
+
+       
+       return "HomePage.html";
+       
+        // UserEntity user = (UserEntity) model.getAttribute("loggedUser");
+
+        // if (user == null){
+        //     // model.addAttribute("user", new UserEntity())
+        //     // TODO go to the home page (dashboard) 
+
+        //     System.out.println("User is NULL!");
+        //     return "Login.html";
+        // }else{
+        //     System.out.println("User is NOT NULL!");
+        //     return "SignUp.html";
+        // }
     }
 
+    
+
+    
     @PostMapping("/registered")
     public String postRegistered(Model model, @ModelAttribute UserEntity user) {
 
         System.out.println("user username= " + user.getUsername());
         //TODO Complete this method!!!
 
-        SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(UserEntity.class).buildSessionFactory();
         Session session = factory.getCurrentSession();
 
         session.beginTransaction();

@@ -8,11 +8,15 @@
 
     <body>
         <h1>Login!</h1>
-        <form action="">
+        <form action="/logged" method="post">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
             <button>Login</button>
 
+            <p style="color: red;" th:if="${loginFail}">Incorrect email or password! Please try again!</p>
+            <p style="color: rgb(5, 5, 5);" th:unless="${loggedUser == null}" th:text="'Hello, ' + ${loggedUser.getUsername()}">Incorrect email or password! Please try again!</p>
+
+            
             <p>Not registered yet? <a href="/signUp">Sign up!</a></p>            
         </form>
     </body>
