@@ -15,6 +15,16 @@
             <button>Login</button>
 
             <p>Already have an account? <a href="/login">Login!</a></p>
+            <!-- userExists -->
+
+            <p class="exist" th:if="${userExists}">This username is already used! Please try again!</p>
         </form>
     </body>
+
+    <style>
+        .exist{
+            color: red;
+            font-size: 150%;
+        }
+    </style>
 </html>

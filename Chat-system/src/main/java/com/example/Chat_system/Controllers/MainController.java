@@ -11,12 +11,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.w3c.dom.Text;
 
 import com.example.Chat_system.Entities.UserEntity;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.PostMapping;
-
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -55,23 +56,34 @@ public class MainController {
         }
         return "Login.html";
     }
+    
+    
+    
+    
+    // List<UserEntity> arr = session.createQuery("FROM UserEntity WHERE username = :username",  UserEntity.class)
+    // .setParameter("username", "")
 
     @GetMapping("/")
     public String showHomePage(Model model) {
        
+        Session session = factory.getCurrentSession();
+        session.beginTransaction();
 
+        List<UserEntity> arr = session.createQuery("FROM UserEntity",  UserEntity.class)
+        .getResultList();
 
-        // Session session = factory.getCurrentSession();
-        // session.beginTransaction();
-
-        // List<UserEntity> arr = session.createQuery("",  UserEntity.class)
-        // .setParameter("", "")
-        // .getResultList();
-
+        if (arr.isEmpty())
+            model.addAttribute("noUsers", true);
         
-
+        model.addAttribute("arr", arr);
        
+        session.getTransaction().commit();
+        session.close();
+
        return "HomePage.html";
+
+
+
        
         // UserEntity user = (UserEntity) model.getAttribute("loggedUser");
 
@@ -89,16 +101,51 @@ public class MainController {
 
     
 
+    @ResponseBody
+    private void searchBar(Model model, @ModelAttribute String searchUser){
+
+        Session session = factory.getCurrentSession();
+        session.beginTransaction();
+
+        List<UserEntity> findUsers = session.createQuery("FROM Users WHERE username = :username", UserEntity.class)
+            .setParameter("username", searchUser)
+            .getResultList();
+
+        if (findUsers.isEmpty()) 
+            model.addAttribute("notFound", true);
+
+
+        model.addAttribute("arr", findUsers);
+        
+        session.getTransaction().commit();
+        session.close();
+    }
+
+
     
     @PostMapping("/registered")
     public String postRegistered(Model model, @ModelAttribute UserEntity user) {
 
         System.out.println("user username= " + user.getUsername());
         //TODO Complete this method!!!
-
-        Session session = factory.getCurrentSession();
+        Session session =  factory.getCurrentSession();
 
         session.beginTransaction();
+
+        List<String> usernames = session.createQuery("SELECT username FROM UserEntity", String.class)
+            .getResultList();
+
+        if (usernames.contains(user.getUsername())){
+            
+            session.getTransaction().commit();
+            session.close();
+            model.addAttribute("userExists", true);
+
+            return "SignUp.html";
+        }
+
+     
+
         session.persist(user);
 
         session.getTransaction().commit();
