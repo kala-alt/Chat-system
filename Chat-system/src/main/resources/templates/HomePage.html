@@ -9,16 +9,21 @@
     <body>
         <div class="showUsers">
             <nav>
-                <input type="text">
+                <form action="/" method="post">
+                    <input type="text" name="searchUser">
                     
-                <button>
-                <img src="/loupe.png" alt="Loupe">
-                </button>
+
+                    <button type="submit">
+                        <img src="/loupe.png" alt="Loupe">
+                    </button>
+                    
+                    <input type="text" name="showUsername" th:text="${showUsername}" style="display: none; visibility: hidden;">
+                </form>
             </nav>
             <div class="selectUsers">
-                <div th:if="${arr.size()>0}" th:each="user : ${arr}">
+                <div th:if="${arr.size()>0}" th:each="user : ${arr}" id="showUserById" onclick="show(this)">
                     <img src="" alt="User`s image">
-                    <p th:text="${user.username}"></p>
+                    <p  th:text="${user.username}"  id="userId"></p>
                 </div>
 
                 <p th:if="${notFound}" class="notFound">Not found!</p>
@@ -31,7 +36,7 @@
         <div class="chatData">
             <nav>
                 <img src="/clickProfile.png" alt="User`s image">
-                <p th:text="${user.username}"></p>
+                <p  th:text="${showUsernameData}"  id="userId" name="showUsername"></p>
             </nav>
             <aside class="chat">
                 <aside class="write">
@@ -47,6 +52,15 @@
             </aside>
         </div>
 
+
+        <script>
+            
+            function show(element){
+                document.getElementsByName("showUsername")[0].value = element.children[1].innerText;
+                document.getElementsByName("showUsername")[1].innerText = element.children[1].innerText;
+            }
+            
+        </script>
 
 
         <style>
@@ -116,6 +130,10 @@
                 justify-content: space-evenly;
                 padding-top: 10%;
                 border: 1px solid red;
+            }
+
+            #showUserById{
+                border: 1px solid black;
             }
 
             .chat{

@@ -15,7 +15,7 @@ import com.example.Chat_system.Entities.UserEntity;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -79,10 +79,13 @@ public class MainController {
                 arr.remove(i);
         
 
+        
         if (arr.isEmpty())
             model.addAttribute("noUsers", true);
         
         model.addAttribute("arr", arr);
+        model.addAttribute("searchUser", "");
+        model.addAttribute("showUsername", "");
        
         session.getTransaction().commit();
         session.close();
@@ -108,24 +111,43 @@ public class MainController {
 
     
 
-    @ResponseBody
-    private void searchBar(Model model, @ModelAttribute String searchUser){
+    @PostMapping("/")
+    private String searchBar(Model model, @RequestParam String searchUser, @RequestParam String showUsername){
 
         Session session = factory.getCurrentSession();
         session.beginTransaction();
 
-        List<UserEntity> findUsers = session.createQuery("FROM Users WHERE username = :username", UserEntity.class)
-            .setParameter("username", searchUser)
+
+        System.out.println("searchUser= " + searchUser + "\t\tshow Username= " + showUsername);
+        List<UserEntity> findUsers;
+
+        if (searchUser.isBlank() == false)
+            findUsers = session.createQuery("FROM UserEntity WHERE lower(username) like lower(:username)", UserEntity.class)
+                .setParameter("username", "%" + searchUser + "%")
+                .getResultList();
+        else
+            findUsers = session.createQuery("FROM UserEntity", UserEntity.class)
             .getResultList();
+
+            
+            for (int i=0; i<findUsers.size(); i++)
+                if (findUsers.get(i).getId() == ((UserEntity) model.getAttribute("loggedUser")) .getId())
+                    findUsers.remove(i);
+
+
+
 
         if (findUsers.isEmpty()) 
             model.addAttribute("notFound", true);
 
 
         model.addAttribute("arr", findUsers);
-        
+        model.addAttribute("showUsernameData", showUsername);
         session.getTransaction().commit();
         session.close();
+
+
+        return "HomePage.html";
     }
 
 
