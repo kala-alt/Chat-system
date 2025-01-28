@@ -3,7 +3,6 @@ package com.example.Chat_system.Controllers;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -11,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import org.w3c.dom.Text;
 
 import com.example.Chat_system.Entities.UserEntity;
 
@@ -32,45 +30,54 @@ public class MainController {
     private static SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(UserEntity.class).buildSessionFactory();
 
     @PostMapping("/logged")
-    public String checkLogin(Model model, @ModelAttribute UserEntity user){
+    public String checkLogin(Model model, @ModelAttribute UserEntity user) throws Exception{
 
-        Session session = factory.getCurrentSession();
+        Session session = factory.openSession();
         session.beginTransaction();
 
         System.err.println("Email: " + user.getEmail());
 
-        UserEntity findUser = session.createQuery("FROM UserEntity WHERE email = :email AND password = :password", UserEntity.class)
-                    .setParameter("email", user.getEmail())
+        UserEntity findUser = session.createQuery("FROM UserEntity WHERE username = :username AND password = :password", UserEntity.class)
+                    .setParameter("username", user.getUsername())
                     .setParameter("password", user.getPassword())
                     .uniqueResult();
 
         session.getTransaction().commit();
         session.close();
 
-
-        if (findUser == null)
+        if (findUser == null){
             model.addAttribute("loginFail", true);
+            return "Login.html";
+        }
         else{
             model.addAttribute("loginFail", false);
             model.addAttribute("loggedUser", findUser);
+            
+            return "redirect:/";
         }
-        return "Login.html";
     }
-    
-    
-    
-    
-    // List<UserEntity> arr = session.createQuery("FROM UserEntity WHERE username = :username",  UserEntity.class)
-    // .setParameter("username", "")
 
+    
+
+    
     @GetMapping("/")
     public String showHomePage(Model model) {
-       
+       UserEntity loggedUser = (UserEntity) model.getAttribute("loggedUser");
+
+       if (loggedUser == null)
+            return "redirect:/login";
+
         Session session = factory.getCurrentSession();
         session.beginTransaction();
 
         List<UserEntity> arr = session.createQuery("FROM UserEntity",  UserEntity.class)
         .getResultList();
+
+
+        for (int i=0; i<arr.size(); i++)
+            if (arr.get(i).getId() == loggedUser.getId())
+                arr.remove(i);
+        
 
         if (arr.isEmpty())
             model.addAttribute("noUsers", true);
