@@ -3,6 +3,7 @@ package com.example.Chat_system.Controllers;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.example.Chat_system.Entities.MessageEntity;
 import com.example.Chat_system.Entities.UserEntity;
 import com.example.Chat_system.Services.MessageService;
 import com.example.Chat_system.Services.UserService;
@@ -93,31 +95,15 @@ public class MainController {
         model.addAttribute("arr", arr);
         model.addAttribute("searchUser", "");
         model.addAttribute("showUsername", "");
-       
+        
+        model.addAttribute("sended", new ArrayList<MessageEntity>());
+        model.addAttribute("received", new ArrayList<MessageEntity>());
+
         session.getTransaction().commit();
         session.close();
 
-
-        // model.addAttribute("sended", messageService.getUserMessages(loggedUser.getId(), null));
-        // model.addAttribute("received", messageService.getUserMessages(null, loggedUser.getId()))
-
        return "HomePage.html";
 
-
-
-       
-        // UserEntity user = (UserEntity) model.getAttribute("loggedUser");
-
-        // if (user == null){
-        //     // model.addAttribute("user", new UserEntity())
-        //     // TODO go to the home page (dashboard) 
-
-        //     System.out.println("User is NULL!");
-        //     return "Login.html";
-        // }else{
-        //     System.out.println("User is NOT NULL!");
-        //     return "SignUp.html";
-        // }
     }
 
     

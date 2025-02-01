@@ -29,7 +29,6 @@
                 <p th:if="${notFound}" class="notFound">Not found!</p>
                 <p th:if="${noUsers}" class="emptyDb">Database is out of users!</p>
                 
-
             </div>
         </div>
 
@@ -40,7 +39,11 @@
             </nav>
             <aside class="chat">
                 <aside class="write">
+                    <div th:if="${sended != null}">
+                        <p th:if="${sended.isEmpty() && received.isEmpty}" style="color: red; text-align: center;">This chat is empty!</p>
+                    </div>
                     <p th:if="${sended == null && received == null}" style="color: red; text-align: center;">This chat is empty!</p>
+                    
                 </aside>
                     
                 <div>
