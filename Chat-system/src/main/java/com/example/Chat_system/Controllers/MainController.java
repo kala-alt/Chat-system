@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.example.Chat_system.Entities.UserEntity;
+import com.example.Chat_system.Services.MessageService;
+import com.example.Chat_system.Services.UserService;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +29,10 @@ import org.hibernate.cfg.Configuration;
 @Controller
 @SessionAttributes("loggedUser")
 public class MainController {
+
+    private UserService userService = new UserService();
+    private MessageService messageService = new MessageService();
+    
 
     private static SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(UserEntity.class).buildSessionFactory();
 
@@ -52,7 +59,7 @@ public class MainController {
         else{
             model.addAttribute("loginFail", false);
             model.addAttribute("loggedUser", findUser);
-            
+
             return "redirect:/";
         }
     }
@@ -89,6 +96,10 @@ public class MainController {
        
         session.getTransaction().commit();
         session.close();
+
+
+        // model.addAttribute("sended", messageService.getUserMessages(loggedUser.getId(), null));
+        // model.addAttribute("received", messageService.getUserMessages(null, loggedUser.getId()))
 
        return "HomePage.html";
 
@@ -135,18 +146,28 @@ public class MainController {
                     findUsers.remove(i);
 
 
-
-
         if (findUsers.isEmpty()) 
             model.addAttribute("notFound", true);
 
 
         model.addAttribute("arr", findUsers);
-        model.addAttribute("showUsernameData", showUsername);
+        
         session.getTransaction().commit();
         session.close();
 
 
+        if (showUsername.isBlank() == false){
+            model.addAttribute("showUsernameData", showUsername);
+            UserEntity user = (UserEntity) userService.findUserViaUsername(showUsername);
+
+            UserEntity loggedUser = (UserEntity) model.getAttribute("loggedUser");
+
+        
+            if (user != null){
+                model.addAttribute("sended", messageService.getUserMessages(loggedUser.getId(), user.getId()));
+                model.addAttribute("received", messageService.getUserMessages(user.getId(), loggedUser.getId()));
+            }
+        }
         return "HomePage.html";
     }
 
