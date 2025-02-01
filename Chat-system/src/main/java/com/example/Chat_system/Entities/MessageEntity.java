@@ -20,7 +20,7 @@ public class MessageEntity {
     private int id;
 
     private String description;
-    private int authorId, recipientId;
+    private int authorid, recipientid;
     private Date date;
     private Time time;
 
@@ -36,17 +36,17 @@ public class MessageEntity {
     public void setDescription(String description) {
         this.description = description;
     }
-    public int getAuthorId() {
-        return authorId;
+    public int getAuthorid() {
+        return authorid;
     }
-    public void setAuthorId(int authorId) {
-        this.authorId = authorId;
+    public void setAuthorid(int authorid) {
+        this.authorid = authorid;
     }
-    public int getRecipientId() {
-        return recipientId;
+    public int getRecipientid() {
+        return recipientid;
     }
-    public void setRecipientId(int recipientId) {
-        this.recipientId = recipientId;
+    public void setRecipientId(int recipientid) {
+        this.recipientid = recipientid;
     }
     public Date getDate() {
         return date;
@@ -60,5 +60,5 @@ public class MessageEntity {
     public void setTime(Time time) {
         this.time = time;
     }
-    
+
 }
