@@ -6,7 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,11 +24,12 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import org.hibernate.cfg.Configuration;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 
 @Controller
-@SessionAttributes("loggedUser")
+@SessionAttributes({"loggedUser", "recipientUser"})
 public class MainController {
 
     private UserService userService = new UserService();
@@ -103,7 +103,6 @@ public class MainController {
         session.close();
 
        return "HomePage.html";
-
     }
 
     
@@ -147,18 +146,38 @@ public class MainController {
             UserEntity user = (UserEntity) userService.findUserViaUsername(showUsername);
 
             UserEntity loggedUser = (UserEntity) model.getAttribute("loggedUser");
-
         
             if (user != null){
                 model.addAttribute("sended", messageService.getUserMessages(loggedUser.getId(), user.getId()));
                 model.addAttribute("received", messageService.getUserMessages(user.getId(), loggedUser.getId()));
             }
         }
+
+        // model.addAttribute("message", "This is Test Message!");
         return "HomePage.html";
     }
 
 
+    @PostMapping("/chatting")
+    public String chatting(Model model, @RequestParam String message) {
+
+        UserEntity user = (UserEntity) model.getAttribute("loggedUser");
+        String reciver = (String) model.getAttribute("recipientUser");
+
+        messageService.addMessage(user.getId(), userService.findUserViaUsername(reciver).getId(), message);
+
+        return "redirect:/";
+    }
+
+
+    @PostMapping("/setReceiver")
+    public void setReceiver(Model model, @RequestBody String username) {
+        
+        model.addAttribute("recipientUser", username);
+        System.out.println("\n****************\nNew recipientUser= " + username);
+    }
     
+
     @PostMapping("/registered")
     public String postRegistered(Model model, @ModelAttribute UserEntity user) {
 

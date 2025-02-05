@@ -47,10 +47,12 @@
                 </aside>
                     
                 <div>
-                    <input type="text" name="message">
-                    <button type="submit">
-                    <img src="/send.png" alt="Send image">
-                    </button>
+                    <form action="/chatting" method="post">
+                        <input type="text" name="message">
+                        <button type="submit">
+                        <img src="/send.png" alt="Send image">
+                        </button>
+                    </form>
                 </div>
             </aside>
         </div>
@@ -61,7 +63,27 @@
             function show(element){
                 document.getElementsByName("showUsername")[0].value = element.children[1].innerText;
                 document.getElementsByName("showUsername")[1].innerText = element.children[1].innerText;
+
+
+                fetch("/setReceiver", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "text/html;charset=UTF-8"
+                    },
+                    body: element.children[1].innerText
+                });
+                    
+
+
             }
+
+
+
+
+            // function showMessage(){
+                // const message = "[[${message}]]";
+                // alert("Message: " + message);
+            // }
             
         </script>
 
