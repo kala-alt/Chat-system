@@ -39,18 +39,27 @@
             </nav>
             <aside class="chat">
                 <aside class="write">
-                    <div th:if="${sended != null}">
-                        <p th:if="${sended.isEmpty() && received.isEmpty}" style="color: red; text-align: center;">This chat is empty!</p>
+                    <div th:if="${messages != null}">
+                        <p th:if="${messages.isEmpty()}" style="color: red; text-align: center;">This chat is empty!</p>
+                        <div th:unless="${messages.isEmpty()}" 
+                            th:each="m : ${messages}">
+                                <div th:if="${m.getAuthorId == loggedUserId}" class="author">
+                                    <p th:text="${m.getDescription}"></p>
+                                </div>
+
+                                <div th:unless="${m.getAuthorId == loggedUserId}" class="recipient">
+                                    <p th:text="${m.getDescription}"></p>
+                                </div>
+                        </div>
                     </div>
-                    <p th:if="${sended == null && received == null}" style="color: red; text-align: center;">This chat is empty!</p>
-                    
+                    <p th:if="${messages == null}" style="color: red; text-align: center;">This chat is empty!</p>
                 </aside>
                     
                 <div>
                     <form action="/chatting" method="post">
                         <input type="text" name="message">
                         <button type="submit">
-                        <img src="/send.png" alt="Send image">
+                            <img src="/send.png" alt="Send image">
                         </button>
                     </form>
                 </div>
@@ -191,6 +200,18 @@
                 font-size: 120%;
                 width: 100%;
                 flex-wrap: wrap;
+            }
+
+            .author{
+                display: flex;
+                justify-content: right;
+                color: blue;
+            }
+
+            .recipient{
+                display: flex;
+                justify-content: left;
+                color: red;
             }
 
         </style>

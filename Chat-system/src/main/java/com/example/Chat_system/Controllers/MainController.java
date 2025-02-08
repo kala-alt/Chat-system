@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -148,8 +149,27 @@ public class MainController {
             UserEntity loggedUser = (UserEntity) model.getAttribute("loggedUser");
         
             if (user != null){
-                model.addAttribute("sended", messageService.getUserMessages(loggedUser.getId(), user.getId()));
-                model.addAttribute("received", messageService.getUserMessages(user.getId(), loggedUser.getId()));
+                // model.addAttribute("sended", messageService.getUserMessages(loggedUser.getId(), user.getId()));
+                // model.addAttribute("received", messageService.getUserMessages(user.getId(), loggedUser.getId()));
+
+                List<MessageEntity> arr =new ArrayList<>();
+
+                arr = messageService.getUserMessages(loggedUser.getId(), user.getId());
+                
+                arr.addAll(messageService.getUserMessages(user.getId(), loggedUser.getId()));
+                
+                arr.sort((Comparator.comparing((MessageEntity m) -> m.getDate())
+                           .thenComparing(m -> m.getTime())));
+
+                model.addAttribute("messages", arr);
+                model.addAttribute("loggedUserId", loggedUser.getId());
+
+                System.out.println("\n\n*************Debug print****************");
+                for (MessageEntity m : arr)
+                    System.out.println(m.getDate() + "\ttime:" + m.getTime() + "\tAuthorId: " + m.getAuthorid());
+
+                System.out.println("-------------------------------------\n");
+
             }
         }
 

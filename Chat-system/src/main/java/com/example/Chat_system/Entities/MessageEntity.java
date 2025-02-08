@@ -24,6 +24,8 @@ public class MessageEntity {
     private LocalDate date;
     private LocalTime time;
 
+    
+
     public MessageEntity(){
     
     }
