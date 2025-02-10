@@ -39,22 +39,17 @@
             </nav>
             <aside class="chat">
                 <aside class="write">
-                    <div th:if="${messages != null}">
+                    <div th:if="${messages != null}" class="container">
                         <p th:if="${messages.isEmpty}" style="color: red; text-align: center;" th:text="${Is empty? - messages.isEmpty}">This chat is empty!</p>
-                        <div th:unless="${messages.isEmpty()}" 
+                        <th:block th:unless="${messages.isEmpty()}" 
                             th:each="m : ${messages}">
 
 
-                            <div th:if="${m.getAuthorid() == loggedUserId}" class="author">
-                                <p th:text="${m.getDescription()}"></p>
-                            </div> 
+                                <p th:if="${m.getAuthorid() == loggedUserId}" class="author" th:text="${m.getDescription()}"></p>
 
+                                <p th:unless="${m.getAuthorid() == loggedUserId}" class="recipient" th:text="${m.getDescription()}"></p>
 
-                            <div th:unless="${m.getAuthorid() == loggedUserId}" class="recipient">
-                                <p th:text="${m.getDescription()}"></p>
-                            </div>
-
-                        </div>
+                        </th:block>
 
                     </div>
                     <p th:if="${messages == null}" style="color: red; text-align: center;">This chat is empty!</p>
@@ -110,6 +105,8 @@
                 display: flex;
                 flex-direction: row;
             }
+            
+            
 
             .showUsers{
                 width: 30%;
@@ -127,6 +124,7 @@
                 height: 100%;
                 border: 1px solid black;
             }
+
 
             input{
                 font-size: 150%;
@@ -184,9 +182,13 @@
             .write{
                 width: 100%;
                 height: 75%;
-                display: flex;
+                display: block;
                 flex-direction: row;
                 overflow: auto;
+            }
+
+            .write div{
+                width: 100%;
             }
 
             .write input{
@@ -202,22 +204,27 @@
                 flex-wrap: wrap;
             }
 
-            .author{
+            .container{
                 display: flex;
+                flex-direction: row;
+                width: 100%;
+                height: 100%;
+            }
+
+            .author{
+                display: block;
                 justify-content: right;
                 color: blue;
                 width: 100%;
-            }
-
-            .author p, .recipient p{
-                display: block;
+                height: 15%;
             }
 
             .recipient{
-                display: flex;
+                display: block;
                 justify-content: left;
                 color: red;
                 width: 100%;
+                height: 15%;
             }
 
         </style>
