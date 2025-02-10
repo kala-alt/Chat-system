@@ -274,5 +274,6 @@ public class MainController {
         System.out.println(formatter.format(date));
 
         return "index.html";
+        
     }
 }
