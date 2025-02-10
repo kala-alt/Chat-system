@@ -40,17 +40,22 @@
             <aside class="chat">
                 <aside class="write">
                     <div th:if="${messages != null}">
-                        <p th:if="${messages.isEmpty()}" style="color: red; text-align: center;">This chat is empty!</p>
+                        <p th:if="${messages.isEmpty}" style="color: red; text-align: center;" th:text="${Is empty? - messages.isEmpty}">This chat is empty!</p>
                         <div th:unless="${messages.isEmpty()}" 
                             th:each="m : ${messages}">
-                                <div th:if="${m.getAuthorId == loggedUserId}" class="author">
-                                    <p th:text="${m.getDescription}"></p>
-                                </div>
 
-                                <div th:unless="${m.getAuthorId == loggedUserId}" class="recipient">
-                                    <p th:text="${m.getDescription}"></p>
-                                </div>
+
+                            <div th:if="${m.getAuthorid() == loggedUserId}" class="author">
+                                <p th:text="${m.getDescription()}"></p>
+                            </div> 
+
+
+                            <div th:unless="${m.getAuthorid() == loggedUserId}" class="recipient">
+                                <p th:text="${m.getDescription()}"></p>
+                            </div>
+
                         </div>
+
                     </div>
                     <p th:if="${messages == null}" style="color: red; text-align: center;">This chat is empty!</p>
                 </aside>
@@ -73,17 +78,13 @@
                 document.getElementsByName("showUsername")[0].value = element.children[1].innerText;
                 document.getElementsByName("showUsername")[1].innerText = element.children[1].innerText;
 
+                
 
                 fetch("/setReceiver", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "text/html;charset=UTF-8"
-                    },
                     body: element.children[1].innerText
                 });
                     
-
-
             }
 
 
@@ -186,7 +187,6 @@
                 display: flex;
                 flex-direction: row;
                 overflow: auto;
-                /* margin-bottom: 0; */
             }
 
             .write input{
@@ -206,12 +206,18 @@
                 display: flex;
                 justify-content: right;
                 color: blue;
+                width: 100%;
+            }
+
+            .author p, .recipient p{
+                display: block;
             }
 
             .recipient{
                 display: flex;
                 justify-content: left;
                 color: red;
+                width: 100%;
             }
 
         </style>

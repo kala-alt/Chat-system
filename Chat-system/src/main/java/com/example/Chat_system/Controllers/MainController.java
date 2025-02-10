@@ -21,6 +21,7 @@ import com.example.Chat_system.Services.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -164,7 +165,7 @@ public class MainController {
                 model.addAttribute("messages", arr);
                 model.addAttribute("loggedUserId", loggedUser.getId());
 
-                System.out.println("\n\n*************Debug print****************");
+                System.out.println("\n\n*************Debug print**************** Logged user id= " + loggedUser.getId());
                 for (MessageEntity m : arr)
                     System.out.println(m.getDate() + "\ttime:" + m.getTime() + "\tAuthorId: " + m.getAuthorid());
 
@@ -187,14 +188,6 @@ public class MainController {
         messageService.addMessage(user.getId(), userService.findUserViaUsername(reciver).getId(), message);
 
         return "redirect:/";
-    }
-
-
-    @PostMapping("/setReceiver")
-    public void setReceiver(Model model, @RequestBody String username) {
-        
-        model.addAttribute("recipientUser", username);
-        System.out.println("\n****************\nNew recipientUser= " + username);
     }
     
 
@@ -250,6 +243,7 @@ public class MainController {
         
     }
 
+
     @GetMapping("/login")
     public String showLogin( Model model, HttpSession httpSession) {
         model.addAttribute("user", new UserEntity());
@@ -264,8 +258,6 @@ public class MainController {
     }
 
     
-    
-    
     @GetMapping("/time")
     public String showDate() throws SQLException{
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
@@ -274,6 +266,16 @@ public class MainController {
         System.out.println(formatter.format(date));
 
         return "index.html";
-        
+
+    }
+
+
+
+    //Fetch methods that work with JavaScript
+    @PostMapping("/setReceiver")
+    @ResponseBody
+    public void setReceiver(Model model, @RequestBody String username) {
+        model.addAttribute("recipientUser", username);
+        System.out.println("\n****************\nNew recipientUser= " + username);
     }
 }
