@@ -107,42 +107,9 @@ public class MainController {
        return "HomePage.html";
     }
 
-    
-
-    @PostMapping("/")
-    private String searchBar(Model model, @RequestParam String searchUser, @RequestParam String showUsername){
-
-        Session session = factory.getCurrentSession();
-        session.beginTransaction();
 
 
-        System.out.println("searchUser= " + searchUser + "\t\tshow Username= " + showUsername);
-        List<UserEntity> findUsers;
-
-        if (searchUser.isBlank() == false)
-            findUsers = session.createQuery("FROM UserEntity WHERE lower(username) like lower(:username)", UserEntity.class)
-                .setParameter("username", "%" + searchUser + "%")
-                .getResultList();
-        else
-            findUsers = session.createQuery("FROM UserEntity", UserEntity.class)
-            .getResultList();
-
-            
-            for (int i=0; i<findUsers.size(); i++)
-                if (findUsers.get(i).getId() == ((UserEntity) model.getAttribute("loggedUser")) .getId())
-                    findUsers.remove(i);
-
-
-        if (findUsers.isEmpty()) 
-            model.addAttribute("notFound", true);
-
-
-        model.addAttribute("arr", findUsers);
-        
-        session.getTransaction().commit();
-        session.close();
-
-
+    private void messageCenter(Model model, String showUsername){
         if (showUsername.isBlank() == false){
             model.addAttribute("showUsernameData", showUsername);
             UserEntity user = (UserEntity) userService.findUserViaUsername(showUsername);
@@ -150,8 +117,6 @@ public class MainController {
             UserEntity loggedUser = (UserEntity) model.getAttribute("loggedUser");
         
             if (user != null){
-                // model.addAttribute("sended", messageService.getUserMessages(loggedUser.getId(), user.getId()));
-                // model.addAttribute("received", messageService.getUserMessages(user.getId(), loggedUser.getId()));
 
                 List<MessageEntity> arr =new ArrayList<>();
 
@@ -173,21 +138,52 @@ public class MainController {
 
             }
         }
-
-        // model.addAttribute("message", "This is Test Message!");
-        return "HomePage.html";
     }
 
 
-    @PostMapping("/chatting")
-    public String chatting(Model model, @RequestParam String message) {
+    @GetMapping("/getUserMessages")
+    private List<MessageEntity> getUserMessages(Model model, int receiverId){
+        UserEntity loggedUser = (UserEntity) model.getAttribute("loggedUser");
+        return messageService.getUserMessages(loggedUser.getId(), receiverId);
+    }
 
-        UserEntity user = (UserEntity) model.getAttribute("loggedUser");
-        String reciver = (String) model.getAttribute("recipientUser");
+    
 
-        messageService.addMessage(user.getId(), userService.findUserViaUsername(reciver).getId(), message);
+    @PostMapping("/")
+    private String searchBar(Model model, @RequestParam String searchUser, @RequestParam String showUsername){
 
-        return "redirect:/";
+        Session session = factory.getCurrentSession();
+        session.beginTransaction();
+
+
+        System.out.println("searchUser= " + searchUser + "\t\tshow Username= " + showUsername);
+        List<UserEntity> findUsers;
+
+        if (searchUser.isBlank() == false)
+            findUsers = session.createQuery("FROM UserEntity WHERE lower(username) like lower(:username)", UserEntity.class)
+                .setParameter("username", "%" + searchUser + "%")
+                .getResultList();
+        else
+            findUsers = session.createQuery("FROM UserEntity", UserEntity.class)
+            .getResultList();
+
+            for (int i=0; i<findUsers.size(); i++)
+                if (findUsers.get(i).getId() == ((UserEntity) model.getAttribute("loggedUser")) .getId())
+                    findUsers.remove(i);
+
+
+        if (findUsers.isEmpty()) 
+            model.addAttribute("notFound", true);
+
+        model.addAttribute("arr", findUsers);
+        
+        session.getTransaction().commit();
+        session.close();
+
+        messageCenter(model, showUsername);
+
+        // model.addAttribute("message", "This is Test Message!");
+        return "HomePage.html";
     }
     
 
@@ -212,8 +208,6 @@ public class MainController {
             return "SignUp.html";
         }
 
-     
-
         session.persist(user);
 
         session.getTransaction().commit();
@@ -223,9 +217,6 @@ public class MainController {
         return "Login.html";
     }
     
-    
-
-
 
     @ModelAttribute
     private void justrun(Model model){
@@ -240,7 +231,6 @@ public class MainController {
         }catch(Exception e){
             e.printStackTrace();
         }
-        
     }
 
 
@@ -266,7 +256,6 @@ public class MainController {
         System.out.println(formatter.format(date));
 
         return "index.html";
-
     }
 
 
@@ -278,4 +267,25 @@ public class MainController {
         model.addAttribute("recipientUser", username);
         System.out.println("\n****************\nNew recipientUser= " + username);
     }
+
+
+    @PostMapping("/chatting")
+    @ResponseBody
+    public void chat(Model model, @RequestParam String message) {
+
+        System.out.println("\n\n*********************\n\n/chatting is working!!!!");
+
+        UserEntity user = (UserEntity) model.getAttribute("loggedUser");
+        String reciver = (String) model.getAttribute("recipientUser");
+
+        messageService.addMessage(user.getId(), userService.findUserViaUsername(reciver).getId(), message);   
+    }
+
+
+    @GetMapping("/getLoggedUserId")
+    public String getLoggedUserId(Model model) {
+        System.out.println("getLoggedUserId method is running.....");
+        return String.valueOf(((UserEntity) model.getAttribute("loggedUser")).getId());
+    }
+    
 }

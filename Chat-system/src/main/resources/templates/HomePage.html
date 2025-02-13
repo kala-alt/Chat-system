@@ -46,7 +46,6 @@
 
 
                                 <p th:if="${m.getAuthorid() == loggedUserId}" class="author" th:text="${m.getDescription()}"></p>
-
                                 <p th:unless="${m.getAuthorid() == loggedUserId}" class="recipient" th:text="${m.getDescription()}"></p>
 
                         </th:block>
@@ -56,7 +55,15 @@
                 </aside>
                     
                 <div>
-                    <form action="/chatting" method="post">
+                    <!-- <form action="/chatting" method="post" id="search" onsubmit="newMessage()">
+                        <input type="text" name="message">
+                        <button type="submit">
+                            <img src="/send.png" alt="Send image">
+                        </button>
+                    </form> -->
+
+
+                    <form id="search">
                         <input type="text" name="message">
                         <button type="submit">
                             <img src="/send.png" alt="Send image">
@@ -69,7 +76,7 @@
 
         <script>
             
-            function show(element){
+            async function show(element){
                 document.getElementsByName("showUsername")[0].value = element.children[1].innerText;
                 document.getElementsByName("showUsername")[1].innerText = element.children[1].innerText;
 
@@ -79,8 +86,82 @@
                     method: "POST",
                     body: element.children[1].innerText
                 });
-                    
+
+                // TODO Check if the methods down work as expected
+
+                try {
+                    const response = await fetch("/getUserMessages");
+                    const messages = await response.json();
+
+                    const userResponse = await fetch("/getLoggedUserId");
+                    const loggedUserId = await userResponse.text();
+
+                    messages.forEach(message => {
+                        alert(`It's message with ID= ${message.getId()}`);
+
+                        var element = document.createElement("p");
+
+                        if (message.getId() == loggedUserId) {
+                            element.className = "author";
+                        } else {
+                            element.className = "recipient";
+                        }
+
+                        element.textContent = message.getDescription();
+
+                        document.getElementsByClassName("write")[0].appendChild(element);
+                    });
+                } catch (error) {
+                    console.error("Error fetching messages:", error);
+                }
             }
+
+            document.getElementById("search").addEventListener("submit", async function (event) {
+            event.preventDefault(); 
+            let messageInput = document.getElementsByName("message")[0];
+            let messageText = messageInput.value.trim();
+
+            if (messageText === "") return;
+
+            let element = document.createElement("p");
+            element.className = "author";
+            element.innerText = messageText;
+            document.getElementsByClassName("container")[0].appendChild(element);
+
+            await fetch("/chatting", {
+                method: "POST",
+                body: new URLSearchParams({ message: messageText })
+            });
+
+            messageInput.value = "";
+        });
+
+
+
+
+
+
+            // function newMessage(event) {
+
+            //     event.preventDefault();
+            //     let messageInput = document.getElementsByName("message")[0];
+
+            //     let element = document.createElement("p");
+            //     element.className = "author";
+            //     element.innerText = messageInput.value;
+
+            //     document.getElementsByClassName("container")[0].appendChild(element);
+
+                
+
+            //     fetch("/chatting", {
+            //         method: "POST",
+            //         body: messageInput.value
+            //     });
+                
+            //     messageInput.value = "";
+            // }
+
 
 
 
@@ -212,7 +293,7 @@
             }
 
             .author{
-                display: block;
+                /* display: block; */
                 justify-content: right;
                 color: blue;
                 width: 100%;
@@ -220,7 +301,7 @@
             }
 
             .recipient{
-                display: block;
+                /* display: block; */
                 justify-content: left;
                 color: red;
                 width: 100%;
