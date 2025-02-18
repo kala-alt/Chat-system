@@ -42,11 +42,11 @@
                     <div th:if="${messages != null}" class="container">
                         <p th:if="${messages.isEmpty}" style="color: red; text-align: center;" th:text="${Is empty? - messages.isEmpty}">This chat is empty!</p>
                         <th:block th:unless="${messages.isEmpty()}" 
-                            th:each="m : ${messages}">
-
+                            th:each="m : ${messages}" class="showChat">
 
                                 <p th:if="${m.getAuthorid() == loggedUserId}" class="author" th:text="${m.getDescription()}"></p>
                                 <p th:unless="${m.getAuthorid() == loggedUserId}" class="recipient" th:text="${m.getDescription()}"></p>
+                                <p th:text="${m.getDate() + ' ' + m.getTime()}" class="dateTime"></p>
 
                         </th:block>
 
@@ -61,7 +61,6 @@
                             <img src="/send.png" alt="Send image">
                         </button>
                     </form> -->
-
 
                     <form id="search">
                         <input type="text" name="message">
@@ -80,17 +79,15 @@
                 document.getElementsByName("showUsername")[0].value = element.children[1].innerText;
                 document.getElementsByName("showUsername")[1].innerText = element.children[1].innerText;
 
-                
-
                 fetch("/setReceiver", {
                     method: "POST",
                     body: element.children[1].innerText
                 });
 
-                // TODO Check if the methods down work as expected
+                // TODO This code doesn`t work
 
                 try {
-                    const response = await fetch("/getUserMessages");
+                    const response = await fetch(`/getUserMessagesViaUsername?receiverUsername=${element.children[1].innerText}`);
                     const messages = await response.json();
 
                     const userResponse = await fetch("/getLoggedUserId");
@@ -109,12 +106,14 @@
 
                         element.textContent = message.getDescription();
 
-                        document.getElementsByClassName("write")[0].appendChild(element);
+                        document.getElementsByClassName("showChat")[0].appendChild(element);
                     });
                 } catch (error) {
                     console.error("Error fetching messages:", error);
                 }
             }
+
+
 
             document.getElementById("search").addEventListener("submit", async function (event) {
             event.preventDefault(); 
@@ -187,6 +186,10 @@
                 flex-direction: row;
             }
             
+            .dateTime{
+                color: black;
+                font-size: 20px;
+            }
             
 
             .showUsers{

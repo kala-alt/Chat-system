@@ -140,9 +140,17 @@ public class MainController {
         }
     }
 
+    @GetMapping("/getUserMessagesViaUsername")
+    private List<MessageEntity> getUserMessagesViaUsername(Model model, @RequestParam String receiverUsername){
+        System.out.println("getUserMessagesViaUsername() is running...");
+        UserEntity loggedUser = (UserEntity) model.getAttribute("loggedUser");
+        return messageService.getUserMessages(loggedUser.getId(), userService.findUserViaUsername(receiverUsername).getId());
+    }
+
 
     @GetMapping("/getUserMessages")
     private List<MessageEntity> getUserMessages(Model model, int receiverId){
+        System.out.println("getUserMessages() is running...");
         UserEntity loggedUser = (UserEntity) model.getAttribute("loggedUser");
         return messageService.getUserMessages(loggedUser.getId(), receiverId);
     }

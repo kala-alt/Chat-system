@@ -28,6 +28,8 @@ public class MessageService {
 
         session.getTransaction().commit();
         session.close();
+        
+        System.out.println("Message Array size = " + arr.size());
 
         return arr;
     }
