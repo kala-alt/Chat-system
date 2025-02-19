@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -145,7 +146,12 @@ public class MainController {
     public List<MessageEntity> getUserMessagesViaUsername(Model model, @RequestParam String receiverUsername){
         System.out.println("getUserMessagesViaUsername() is running... " + receiverUsername);
         UserEntity loggedUser = (UserEntity) model.getAttribute("loggedUser");
-        return messageService.getUserMessages(loggedUser.getId(), userService.findUserViaUsername(receiverUsername).getId());
+        List<MessageEntity> arr = messageService.getUserMessages(loggedUser.getId(), userService.findUserViaUsername(receiverUsername).getId());
+        arr.addAll(messageService.getUserMessages(userService.findUserViaUsername(receiverUsername).getId(), loggedUser.getId()));
+        arr.sort(Comparator.comparing((MessageEntity m ) -> m.getDate()).thenComparing(m -> m.getTime()));
+
+        return arr;
+
     }
 
 
@@ -153,7 +159,10 @@ public class MainController {
     private List<MessageEntity> getUserMessages(Model model, int receiverId){
         System.out.println("getUserMessages() is running...");
         UserEntity loggedUser = (UserEntity) model.getAttribute("loggedUser");
-        return messageService.getUserMessages(loggedUser.getId(), receiverId);
+        List<MessageEntity> arr = messageService.getUserMessages(loggedUser.getId(), receiverId);
+        arr.sort(Comparator.comparing((MessageEntity m) -> m.getDate()).thenComparing(m -> m.getTime()));
+
+        return arr;
     }
 
     
