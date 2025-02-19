@@ -107,8 +107,8 @@
                         var newElement = document.createElement("p");
                         var date = document.createElement("p");
                         date.className = "dateTime";
-
-                        if (message.id == loggedUserId) 
+                        
+                        if (message.authorid == loggedUserId) 
                             newElement.className = "author";
                          else 
                             newElement.className = "recipient";
