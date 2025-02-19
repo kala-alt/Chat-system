@@ -39,8 +39,8 @@
             </nav>
             <aside class="chat">
                 <aside class="write">
-                    <div th:if="${messages != null}" class="container">
-                        <p th:if="${messages.isEmpty}" style="color: red; text-align: center;" th:text="${Is empty? - messages.isEmpty}">This chat is empty!</p>
+                    <div th:if="${messages != null}" id="container">
+                        <p th:if="${messages.isEmpty}" class="emptyChat" style="color: red; text-align: center;">This chat is empty!</p>
                         <th:block th:unless="${messages.isEmpty()}" 
                             th:each="m : ${messages}" class="showChat">
 
@@ -90,23 +90,29 @@
                     const response = await fetch(`/getUserMessagesViaUsername?receiverUsername=${element.children[1].innerText}`);
                     const messages = await response.json();
 
+                    if (messages.length>0){
+                        alert("messages.length>0!");
+                        document.getElementsByClassName("write")[0].innerHTML = "";
+                    }
+
                     const userResponse = await fetch("/getLoggedUserId");
                     const loggedUserId = await userResponse.text();
-
                     messages.forEach(message => {
-                        alert(`It's message with ID= ${message.getId()}`);
 
-                        var element = document.createElement("p");
+                        var newElement = document.createElement("p");
+                        var date = document.createElement("p");
+                        date.className = "dateTime";
 
-                        if (message.getId() == loggedUserId) {
-                            element.className = "author";
+                        if (message.id == loggedUserId) {
+                            newElement.className = "author";
                         } else {
-                            element.className = "recipient";
+                            newElement.className = "recipient";
                         }
 
-                        element.textContent = message.getDescription();
-
-                        document.getElementsByClassName("showChat")[0].appendChild(element);
+                        newElement.textContent = message.description;
+                        date.textContent = message.date + " " + message.time;
+                        document.getElementsByClassName("write")[0].appendChild(newElement);
+                        document.getElementsByClassName("write")[0].appendChild(date);
                     });
                 } catch (error) {
                     console.error("Error fetching messages:", error);
@@ -125,7 +131,7 @@
             let element = document.createElement("p");
             element.className = "author";
             element.innerText = messageText;
-            document.getElementsByClassName("container")[0].appendChild(element);
+            document.getElementById("container").appendChild(element);
 
             await fetch("/chatting", {
                 method: "POST",
@@ -288,7 +294,7 @@
                 flex-wrap: wrap;
             }
 
-            .container{
+            #container{
                 display: flex;
                 flex-direction: row;
                 width: 100%;

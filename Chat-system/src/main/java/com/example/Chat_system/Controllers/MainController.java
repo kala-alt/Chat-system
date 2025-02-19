@@ -141,8 +141,9 @@ public class MainController {
     }
 
     @GetMapping("/getUserMessagesViaUsername")
-    private List<MessageEntity> getUserMessagesViaUsername(Model model, @RequestParam String receiverUsername){
-        System.out.println("getUserMessagesViaUsername() is running...");
+    @ResponseBody
+    public List<MessageEntity> getUserMessagesViaUsername(Model model, @RequestParam String receiverUsername){
+        System.out.println("getUserMessagesViaUsername() is running... " + receiverUsername);
         UserEntity loggedUser = (UserEntity) model.getAttribute("loggedUser");
         return messageService.getUserMessages(loggedUser.getId(), userService.findUserViaUsername(receiverUsername).getId());
     }
@@ -291,6 +292,7 @@ public class MainController {
 
 
     @GetMapping("/getLoggedUserId")
+    @ResponseBody
     public String getLoggedUserId(Model model) {
         System.out.println("getLoggedUserId method is running.....");
         return String.valueOf(((UserEntity) model.getAttribute("loggedUser")).getId());
