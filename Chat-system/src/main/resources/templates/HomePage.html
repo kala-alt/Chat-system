@@ -103,11 +103,11 @@
                         var date = document.createElement("p");
                         date.className = "dateTime";
 
-                        if (message.id == loggedUserId) {
+                        if (message.id == loggedUserId) 
                             newElement.className = "author";
-                        } else {
+                         else 
                             newElement.className = "recipient";
-                        }
+                        
 
                         newElement.textContent = message.description;
                         date.textContent = message.date + " " + message.time;
