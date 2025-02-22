@@ -62,8 +62,8 @@
                         </button>
                     </form> -->
 
-                    <form id="search">
-                        <input type="text" name="message">
+                    <form id="search" name="sendMessage">
+                        <input type="text" id="message">
                         <button type="submit">
                             <img src="/send.png" alt="Send image">
                         </button>
@@ -74,10 +74,10 @@
 
 
         <script>
-            var elementParam;
+            var usernameParam;
 
             async function show(element){
-                elementParam = element;
+                usernameParam = element.children[1].innerText;
                 document.getElementsByName("showUsername")[0].value = element.children[1].innerText;
                 document.getElementsByName("showUsername")[1].innerText = element.children[1].innerText;
 
@@ -89,14 +89,14 @@
                 loadMessages(element);
             }
 
-            setInterval(() => loadMessages(elementParam), 5000);
+            setInterval(() => loadMessages(usernameParam), 5000);
             
 
-            async function loadMessages(element){
+            async function loadMessages(){
                 try {
-                    const response = await fetch(`/getUserMessagesViaUsername?receiverUsername=${element.children[1].innerText}`);
+                    const response = await fetch(`/getUserMessagesViaUsername?receiverUsername=${usernameParam}`);
                     const messages = await response.json();
-
+          
                     if (messages.length>0)
                         document.getElementsByClassName("write")[0].innerHTML = "";
 
@@ -118,16 +118,25 @@
                         document.getElementsByClassName("write")[0].appendChild(newElement);
                         document.getElementsByClassName("write")[0].appendChild(date);
                     });
+
                 } catch (error) {
                     console.error("Error fetching messages:", error);
                 }
             }
 
+            document.getElementsByName("sendMessage")[0].addEventListener("submit", async function sendMessage() {
+                fetch("/chatting", {
+                    method: "POST",
+                    body: new URLSearchParams({ message: document.getElementById("message").innerText})
+                });
+
+                loadMessages();
+            });
 
 
             document.getElementById("search").addEventListener("submit", async function (event) {
             event.preventDefault(); 
-            let messageInput = document.getElementsByName("message")[0];
+            let messageInput = document.getElementById("message");
             let messageText = messageInput.value.trim();
 
             if (messageText === "") return;

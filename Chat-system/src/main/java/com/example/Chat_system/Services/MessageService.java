@@ -10,7 +10,6 @@ import org.hibernate.cfg.Configuration;
 
 import com.example.Chat_system.Entities.MessageEntity;
 
-
 public class MessageService {
     
  private static SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(MessageEntity.class).buildSessionFactory();

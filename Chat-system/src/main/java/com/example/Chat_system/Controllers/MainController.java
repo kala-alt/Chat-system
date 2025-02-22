@@ -305,5 +305,7 @@ public class MainController {
         System.out.println("getLoggedUserId method is running.....");
         return String.valueOf(((UserEntity) model.getAttribute("loggedUser")).getId());
     }
+
+
     
 }

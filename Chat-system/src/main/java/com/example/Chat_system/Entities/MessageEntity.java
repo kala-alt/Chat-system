@@ -24,13 +24,10 @@ public class MessageEntity {
     private LocalDate date;
     private LocalTime time;
 
-    
 
     public MessageEntity(){
     
     }
-
-    
 
 
     public MessageEntity(String description, int authorid, int recipientid, LocalDate date, LocalTime time) {
@@ -40,8 +37,6 @@ public class MessageEntity {
         this.date = date;
         this.time = time;
     }
-
-
 
 
     public int getId() {
