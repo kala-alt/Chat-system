@@ -119,6 +119,8 @@
                         document.getElementsByClassName("write")[0].appendChild(date);
                     });
 
+                    document.getElementsByName("write")[0].scrollTop = document.getElementsByName("write")[0].scrollHeight;
+
                 } catch (error) {
                     console.error("Error fetching messages:", error);
                 }
@@ -127,11 +129,16 @@
             document.getElementsByName("sendMessage")[0].addEventListener("submit", async function sendMessage() {
                 fetch("/chatting", {
                     method: "POST",
-                    body: new URLSearchParams({ message: document.getElementById("message").innerText})
+                    body: new URLSearchParams({ message: document.getElementById("message").value})
                 });
 
+                document.getElementById("message").value = "";
                 loadMessages();
             });
+
+            window.onload = function (){
+                document.getElementsByName("write")[0].scrollTop = document.getElementsByName("write")[0].scrollHeight;
+            }
 
 
             document.getElementById("search").addEventListener("submit", async function (event) {

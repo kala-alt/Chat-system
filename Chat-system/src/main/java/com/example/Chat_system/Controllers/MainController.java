@@ -290,8 +290,12 @@ public class MainController {
     @ResponseBody
     public void chat(Model model, @RequestParam String message) {
 
+
         System.out.println("\n\n*********************\n\n/chatting is working!!!!");
 
+        if(message.isBlank())
+            return;
+        
         UserEntity user = (UserEntity) model.getAttribute("loggedUser");
         String reciver = (String) model.getAttribute("recipientUser");
 
