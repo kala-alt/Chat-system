@@ -38,7 +38,7 @@
                 <p  th:text="${showUsernameData}"  id="userId" name="showUsername"></p>
             </nav>
             <aside class="chat">
-                <aside class="write">
+                <aside class="write" id="write">
                     <div th:if="${messages != null}" id="container">
                         <p th:if="${messages.isEmpty}" class="emptyChat" style="color: red; text-align: center;">This chat is empty!</p>
                         <th:block th:unless="${messages.isEmpty()}" 
@@ -47,9 +47,7 @@
                                 <p th:if="${m.getAuthorid() == loggedUserId}" class="author" th:text="${m.getDescription()}"></p>
                                 <p th:unless="${m.getAuthorid() == loggedUserId}" class="recipient" th:text="${m.getDescription()}"></p>
                                 <p th:text="${m.getDate() + ' ' + m.getTime()}" class="dateTime"></p>
-
                         </th:block>
-
                     </div>
                     <p th:if="${messages == null}" style="color: red; text-align: center;">This chat is empty!</p>
                 </aside>
@@ -112,14 +110,16 @@
                             newElement.className = "author";
                          else 
                             newElement.className = "recipient";
+
                         
                         newElement.textContent = message.description;
+                        console.log("text Content= " + newElement.textContent + "\n");
                         date.textContent = message.date + " " + message.time;
-                        document.getElementsByClassName("write")[0].appendChild(newElement);
-                        document.getElementsByClassName("write")[0].appendChild(date);
+                        document.getElementById("write").appendChild(newElement);
+                        document.getElementById("write").appendChild(date);
                     });
 
-                    document.getElementsByName("write")[0].scrollTop = document.getElementsByName("write")[0].scrollHeight;
+                    document.getElementById("write").scrollTop = document.getElementById("write").scrollHeight;
 
                 } catch (error) {
                     console.error("Error fetching messages:", error);
@@ -135,10 +135,6 @@
                 document.getElementById("message").value = "";
                 loadMessages();
             });
-
-            window.onload = function (){
-                document.getElementsByName("write")[0].scrollTop = document.getElementsByName("write")[0].scrollHeight;
-            }
 
 
             document.getElementById("search").addEventListener("submit", async function (event) {

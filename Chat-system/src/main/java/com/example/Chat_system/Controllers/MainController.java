@@ -29,7 +29,6 @@ import org.hibernate.cfg.Configuration;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
-
 @Controller
 @SessionAttributes({"loggedUser", "recipientUser"})
 public class MainController {
@@ -69,8 +68,6 @@ public class MainController {
     }
 
     
-
-    
     @GetMapping("/")
     public String showHomePage(Model model) {
        UserEntity loggedUser = (UserEntity) model.getAttribute("loggedUser");
@@ -84,12 +81,9 @@ public class MainController {
         List<UserEntity> arr = session.createQuery("FROM UserEntity",  UserEntity.class)
         .getResultList();
 
-
         for (int i=0; i<arr.size(); i++)
             if (arr.get(i).getId() == loggedUser.getId())
                 arr.remove(i);
-        
-
         
         if (arr.isEmpty())
             model.addAttribute("noUsers", true);
@@ -106,7 +100,6 @@ public class MainController {
 
        return "HomePage.html";
     }
-
 
 
     private void messageCenter(Model model, String showUsername){
@@ -140,6 +133,7 @@ public class MainController {
         }
     }
 
+
     @GetMapping("/getUserMessagesViaUsername")
     @ResponseBody
     public List<MessageEntity> getUserMessagesViaUsername(Model model, @RequestParam String receiverUsername){
@@ -150,7 +144,6 @@ public class MainController {
         arr.sort(Comparator.comparing((MessageEntity m ) -> m.getDate()).thenComparing(m -> m.getTime()));
 
         return arr;
-
     }
 
 
@@ -165,7 +158,6 @@ public class MainController {
     }
 
     
-
     @PostMapping("/")
     private String searchBar(Model model, @RequestParam String searchUser, @RequestParam String showUsername){
 
@@ -199,7 +191,6 @@ public class MainController {
 
         messageCenter(model, showUsername);
 
-        // model.addAttribute("message", "This is Test Message!");
         return "HomePage.html";
     }
     
@@ -276,7 +267,6 @@ public class MainController {
     }
 
 
-
     //Fetch methods that work with JavaScript
     @PostMapping("/setReceiver")
     @ResponseBody
@@ -289,7 +279,6 @@ public class MainController {
     @PostMapping("/chatting")
     @ResponseBody
     public void chat(Model model, @RequestParam String message) {
-
 
         System.out.println("\n\n*********************\n\n/chatting is working!!!!");
 
@@ -310,6 +299,4 @@ public class MainController {
         return String.valueOf(((UserEntity) model.getAttribute("loggedUser")).getId());
     }
 
-
-    
 }
