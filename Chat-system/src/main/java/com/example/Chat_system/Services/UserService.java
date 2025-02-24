@@ -3,9 +3,12 @@ package com.example.Chat_system.Services;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.springframework.stereotype.Service;
 
 import com.example.Chat_system.Entities.UserEntity;
 
+
+@Service
 public class UserService {
 
     private static SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(UserEntity.class).buildSessionFactory();

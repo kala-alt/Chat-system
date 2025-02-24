@@ -8,7 +8,7 @@
 
     <body>
         <h1>Login!</h1>
-        <form action="/logged" method="post">
+        <form action="/logged" method="post" th:object="${user}">
             <input type="text" name="username" placeholder="Username" required>
             <input type="password" name="password" placeholder="Password" required>
             <button>Login</button>

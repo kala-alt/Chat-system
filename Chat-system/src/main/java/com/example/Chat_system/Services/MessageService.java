@@ -7,9 +7,11 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.springframework.stereotype.Service;
 
 import com.example.Chat_system.Entities.MessageEntity;
 
+@Service
 public class MessageService {
     
  private static SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(MessageEntity.class).buildSessionFactory();
