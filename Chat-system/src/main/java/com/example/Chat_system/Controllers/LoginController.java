@@ -5,7 +5,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.example.Chat_system.Entities.UserEntity;
 
@@ -19,7 +18,6 @@ public class LoginController {
         model.addAttribute("user", new UserEntity());
         return "Login.html";
     }
-
 
     @PostMapping("/logged")
     public String checkLogin(Model model, @ModelAttribute UserEntity user, HttpSession httpSession) throws Exception{

@@ -40,7 +40,7 @@
             <aside class="chat">
                 <aside class="write" id="write">
                     <div th:if="${messages != null}" id="container">
-                        <p th:if="${messages.isEmpty}" class="emptyChat" style="color: red; text-align: center;">This chat is empty!</p>
+                        <p th:if="${messages.isEmpty}" id="emptyChat">This chat is empty!</p>
                         <th:block th:unless="${messages.isEmpty()}" 
                             th:each="m : ${messages}" class="showChat">
 
@@ -49,17 +49,10 @@
                                 <p th:text="${m.getDate() + ' ' + m.getTime()}" class="dateTime"></p>
                         </th:block>
                     </div>
-                    <p th:if="${messages == null}" style="color: red; text-align: center;">This chat is empty!</p>
+                    <!-- <p th:if="${messages == null}" style="color: red; text-align: center;">This chat is empty!</p> -->
                 </aside>
                     
                 <div>
-                    <!-- <form action="/chatting" method="post" id="search" onsubmit="newMessage()">
-                        <input type="text" name="message">
-                        <button type="submit">
-                            <img src="/send.png" alt="Send image">
-                        </button>
-                    </form> -->
-
                     <form id="search" name="sendMessage">
                         <input type="text" id="message">
                         <button type="submit">
@@ -89,14 +82,23 @@
 
             setInterval(() => loadMessages(usernameParam), 5000);
             
-
             async function loadMessages(){
                 try {
                     const response = await fetch(`/getUserMessagesViaUsername?receiverUsername=${usernameParam}`);
                     const messages = await response.json();
           
                     if (messages.length>0)
-                        document.getElementsByClassName("write")[0].innerHTML = "";
+                        document.getElementById("write").innerHTML = "";
+                    else{
+                        document.getElementById("write").innerHTML = "";
+
+                        var el = document.createElement("p");
+                        el.className = "emptyChat";
+                        el.textContent = "This chat is empty!";
+
+                        document.getElementById("write").appendChild(el);
+                    }
+                        
 
                     const userResponse = await fetch("/getLoggedUserId");
                     const loggedUserId = await userResponse.text();
@@ -156,41 +158,6 @@
 
             messageInput.value = "";
         });
-
-
-
-
-
-
-            // function newMessage(event) {
-
-            //     event.preventDefault();
-            //     let messageInput = document.getElementsByName("message")[0];
-
-            //     let element = document.createElement("p");
-            //     element.className = "author";
-            //     element.innerText = messageInput.value;
-
-            //     document.getElementsByClassName("container")[0].appendChild(element);
-
-                
-
-            //     fetch("/chatting", {
-            //         method: "POST",
-            //         body: messageInput.value
-            //     });
-                
-            //     messageInput.value = "";
-            // }
-
-
-
-
-
-            // function showMessage(){
-                // const message = "[[${message}]]";
-                // alert("Message: " + message);
-            // }
             
         </script>
 
@@ -318,7 +285,6 @@
             }
 
             .author{
-                /* display: block; */
                 justify-content: right;
                 color: blue;
                 width: 100%;
@@ -326,11 +292,15 @@
             }
 
             .recipient{
-                /* display: block; */
                 justify-content: left;
                 color: red;
                 width: 100%;
                 height: 15%;
+            }
+
+            #emptyChat{
+                color: red; 
+                text-align: center;
             }
 
         </style>
